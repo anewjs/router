@@ -2,6 +2,7 @@ import { Router as DefaultRouter, Switch as DefaultSwitch } from 'react-router-d
 import { Route as DefaultRoute } from 'react-router-dom'
 import React from 'react'
 import trimStart from 'lodash.trimstart'
+import createBrowserHistory from 'history/createBrowserHistory'
 import createRouteChainMethods from './createRouteChainMethods'
 import matchRoutes from './matchRoutes'
 
@@ -12,6 +13,22 @@ export class RouterCore {
     }
 
     /**
+     * Wrap Entry Component Around Routes
+     *
+     * @param  {Function} Component       React Component
+     * @param  {Function} options.router  React Route Component
+     * @param  {History}  options.history History Object
+     * @return {Function}                 Rect Component
+     */
+    mount(Component, { router: Router = DefaultRouter, history = createBrowserHistory() } = {}) {
+        return (
+            <Router history={history}>
+                <Component route={{ routes: this.routes }} />
+            </Router>
+        )
+    }
+
+    /**
      * Render Application Routes
      *
      * @param  {Object}   route        route
@@ -19,15 +36,9 @@ export class RouterCore {
      * @return {Function}              React Switch/Route
      */
     render(
-        RouteContainer,
+        { routes },
         { switch: Switch = DefaultSwitch, route: Route = DefaultRoute, ...extraProps } = {}
     ) {
-        if (typeof RouteContainer === 'function') {
-            return <RouteContainer {...extraProps} route={this.routes} />
-        }
-
-        const { routes } = RouteContainer
-
         return routes ? (
             <Switch>
                 {routes.map((route, i) => (
