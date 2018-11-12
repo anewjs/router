@@ -289,21 +289,32 @@ Router.group(
  | ------------------
  */
 
-render(Router.render(AppEntry), document.getElementById('root'))
+render(Router.mount(AppEntry), document.getElementById('root'))
 ```
 
 ### Parameters
 
 ```js
 Routes.render(
-    route: Object|ReactComponent,
+    route: Object,
     config: Object
 )
 ```
 
-`route`: A route object containing children routes. Passing a react component wll render the component with the root routes object passed to props.
+`route`: A route object containing children routes.
 
 `config`: The config object takes the following keys `{ switch, route, ...extraProps }`. The `switch` key specifies the `<Swtich />` component used in the render (Defaults to React Router Switch). The route key specifies the `<Route />` component used t render each route (Defaults to React Router Route). You may also pass extra props to each child component.
+
+```js
+Routes.mount(
+    component: ReactComponent,
+    config: Object
+)
+```
+
+`component`: The entry react component to the routes.
+
+`config`: You may optionally specify the router component and history object used to wrap the entry component parameter.
 
 ## Router Utilities
 
