@@ -289,7 +289,7 @@ Router.group(
  | ------------------
  */
 
-render(Router.mount(AppEntry), document.getElementById('root'))
+render(Router.wrap(AppEntry), document.getElementById('root'))
 ```
 
 ### Parameters
@@ -306,15 +306,66 @@ Routes.render(
 `config`: The config object takes the following keys `{ switch, route, ...extraProps }`. The `switch` key specifies the `<Swtich />` component used in the render (Defaults to React Router Switch). The route key specifies the `<Route />` component used t render each route (Defaults to React Router Route). You may also pass extra props to each child component.
 
 ```js
-Routes.mount(
-    component: ReactComponent,
-    config: Object
+Routes.wrap(
+    Component: ReactComponent,
+    {
+        id: String,
+        Router: ReactComponent,
+        history: Object,
+    },
 )
 ```
 
-`component`: The entry react component to the routes.
+`Component`: A react component to wrap around the configured routes.
 
-`config`: You may optionally specify the router component and history object used to wrap the entry component parameter.
+`id` (Optional): DOM id to mount wrapped react component to.
+
+`Router` (Optional): React Router Component that wraps the `Component` (default to React Router).
+
+`history` (Optional): A history object to use for navigation (default to browser history).
+
+The wrap method returns the `Component` wrapped around a router with the configured routes. This could be used with any component that you want wrap some routes. Most often, this method is used to wrap the application's routes around the application. Note, you should not pass the id parameter to wrap a sub component from the appliation as that attempts to mount the component to the DOM at the provided element `id`.
+
+```js
+import Router, { RouterCore } from '@anew/router'
+
+
+class TodoComponent {...}
+class EntryComponent {...}
+
+// Alternative:
+// const TodoRouter = new RouterCore()
+//
+// Then build the todoRoutes using the router methods
+//
+// TodoRouter.route(1)
+// TodoRouter.group()
+//
+// and so on.
+const TodoRouter = new RouterCore(todoRoutes)
+
+TodoRouter.wrap(TodoComponent) /* => (
+    <Router>
+        <TodoComponent />
+    </Router>
+)*/
+
+Router.store(rootRoutes)
+
+Router.wrap(EntryComponent, { id: 'root' }) /* => {
+    ReactDOM.render((
+        <Router>
+            <EntryComponent />
+        </Router>
+    ), document.getElementById('root'))
+
+    return (
+        <Router>
+            <EntryComponent />
+        </Router
+    )
+}*/
+```
 
 ## Router Utilities
 

@@ -14,14 +14,14 @@ export class RouterCore {
     }
 
     /**
-     * Wrap Entry Component Around Routes
+     * Wrap Component around Routes
      *
      * @param  {Function} Component       React Component
      * @param  {Function} options.router  React Route Component
-     * @param  {History}  options.history History Object
+     * @param  {Object}   options.history  History Object
      * @return {Function}                 Rect Component
      */
-    mount(Component, { id, Router = DefaultRouter, history = createBrowserHistory() } = {}) {
+    wrap(Component, { id, Router = DefaultRouter, history = createBrowserHistory() } = {}) {
         const App = (
             <Router history={history}>
                 <Component route={{ routes: this.routes }} />
