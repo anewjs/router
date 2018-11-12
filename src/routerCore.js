@@ -20,7 +20,7 @@ export class RouterCore {
      * @param  {History}  options.history History Object
      * @return {Function}                 Rect Component
      */
-    mount(Component, { router: Router = DefaultRouter, history = createBrowserHistory() } = {}) {
+    mount(Component, { Router = DefaultRouter, history = createBrowserHistory() } = {}) {
         return (
             <Router history={history}>
                 <Component route={{ routes: this.routes }} />
@@ -35,10 +35,7 @@ export class RouterCore {
      * @param  {Object}   extraProps   Props passed down to routes
      * @return {Function}              React Switch/Route
      */
-    render(
-        { routes },
-        { switch: Switch = DefaultSwitch, route: Route = DefaultRoute, ...extraProps } = {}
-    ) {
+    render({ routes }, { Switch = DefaultSwitch, Route = DefaultRoute, ...extraProps } = {}) {
         return routes ? (
             <Switch>
                 {routes.map((route, i) => (
