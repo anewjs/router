@@ -1,5 +1,6 @@
 import { Router as DefaultRouter, Switch as DefaultSwitch } from 'react-router-dom'
 import { Route as DefaultRoute } from 'react-router-dom'
+import { render } from 'react-dom'
 import React from 'react'
 import trimStart from 'lodash.trimstart'
 import createBrowserHistory from 'history/createBrowserHistory'
@@ -20,12 +21,18 @@ export class RouterCore {
      * @param  {History}  options.history History Object
      * @return {Function}                 Rect Component
      */
-    mount(Component, { Router = DefaultRouter, history = createBrowserHistory() } = {}) {
-        return (
+    mount(Component, { id, Router = DefaultRouter, history = createBrowserHistory() } = {}) {
+        const App = (
             <Router history={history}>
                 <Component route={{ routes: this.routes }} />
             </Router>
         )
+
+        if (id) {
+            render(App, document.getElementById(id))
+        }
+
+        return App
     }
 
     /**
