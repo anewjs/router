@@ -22,17 +22,20 @@ export class RouterCore {
      * @return {Function}                 Rect Component
      */
     wrap(Component, { id, Router = DefaultRouter, history = createBrowserHistory() } = {}) {
-        const App = (
-            <Router history={history}>
-                <Component route={{ routes: this.routes }} />
-            </Router>
-        )
+        const route = { routes: this.routes }
+        const AnewRouter = history
+            ? () => (
+                  <Router history={history}>
+                      <Component route={route} />
+                  </Router>
+              )
+            : () => <Component route={route} />
 
         if (id) {
-            render(App, document.getElementById(id))
+            render(<AnewRouter />, document.getElementById(id))
         }
 
-        return App
+        return AnewRouter
     }
 
     /**
