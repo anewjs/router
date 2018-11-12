@@ -297,13 +297,21 @@ render(Router.wrap(AppEntry), document.getElementById('root'))
 ```js
 Routes.render(
     route: Object,
-    config: Object
+    {
+        Switch: ReactComponent,
+        Route: ReactComponent,
+        extraProps: Object,
+    },
 )
 ```
 
 `route`: A route object containing children routes.
 
-`config`: The config object takes the following keys `{ switch, route, ...extraProps }`. The `switch` key specifies the `<Swtich />` component used in the render (Defaults to React Router Switch). The route key specifies the `<Route />` component used t render each route (Defaults to React Router Route). You may also pass extra props to each child component.
+`Switch` (Optional): A React Router Switch Component used to wrap the rendered routes.
+
+`Route` (Optional): A React Router Route Component used to wrap each route.
+
+`extraProps` (Optional): Additional props passed to each component under the each route.
 
 ```js
 Routes.wrap(
