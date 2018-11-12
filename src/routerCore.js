@@ -31,6 +31,8 @@ export class RouterCore {
               )
             : () => <Component route={route} />
 
+        AnewRouter.displayName = 'AnewRouter'
+
         if (id) {
             render(<AnewRouter />, document.getElementById(id))
         }
