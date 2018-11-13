@@ -21,15 +21,15 @@ export class RouterCore {
      * @param  {Object}   options.history  History Object
      * @return {Function}                 Rect Component
      */
-    wrap(Component, { id, Router = DefaultRouter, history = createBrowserHistory() } = {}) {
+    wrap(
+        Component,
+        { id, Router = DefaultRouter, Route = DefaultRoute, history = createBrowserHistory() } = {}
+    ) {
         const route = { routes: this.routes }
+        const RouteComponent = <Route render={props => <Component {...props} route={route} />} />
         const AnewRouter = history
-            ? () => (
-                  <Router history={history}>
-                      <Component route={route} />
-                  </Router>
-              )
-            : () => <Component route={route} />
+            ? () => <Router history={history}>{RouteComponent}</Router>
+            : () => RouteComponent
 
         AnewRouter.displayName = 'AnewRouter'
 
