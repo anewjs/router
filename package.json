@@ -10,13 +10,7 @@
         "type": "git",
         "url": "git+https://github.com/anew-org/router.git"
     },
-    "keywords": [
-        "anew",
-        "router",
-        "react",
-        "react-router",
-        "react-router-dom"
-    ],
+    "keywords": ["anew", "router", "react", "react-router", "react-router-dom"],
     "bugs": {
         "url": "https://github.com/anew-org/router/issues"
     },
@@ -25,7 +19,9 @@
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
         "lint": "eslint src",
-        "build": "eslint src && rm -rf lib; babel src -d lib;",
+        "clean": "rm -rf lib",
+        "prettier": "prettier --config ./.prettierrc --write src/**.js",
+        "build": "yarn prettier && yarn lint && yarn clean; babel src -d lib;",
         "start": "babel src -w -d lib"
     },
     "dependencies": {
