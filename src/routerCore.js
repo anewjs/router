@@ -1,9 +1,14 @@
-import { Router as DefaultRouter, Switch as DefaultSwitch } from 'react-router-dom'
-import { Route as DefaultRoute } from 'react-router-dom'
+import {
+    Redirect,
+    Route as DefaultRoute,
+    Router as DefaultRouter,
+    Switch as DefaultSwitch,
+} from 'react-router-dom'
 import { render } from 'react-dom'
 import React from 'react'
-import trimStart from 'lodash.trimstart'
 import createBrowserHistory from 'history/createBrowserHistory'
+import trimStart from 'lodash.trimstart'
+
 import createRouteChainMethods from './createRouteChainMethods'
 import matchRoutes from './matchRoutes'
 
@@ -67,6 +72,10 @@ export class RouterCore {
                 ))}
             </Switch>
         ) : null
+    }
+
+    redirect(to) {
+        return <Redirect to={to} />
     }
 
     /**
