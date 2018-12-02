@@ -94,15 +94,6 @@ export class RouterCore {
         const selectedPath = (base + path).replace(/\/{2,}/, '/')
         const { name } = props
 
-        if (name) {
-            this.routesByName[name] = createRouteChainMethods(
-                this,
-                name,
-                selectedPath,
-                routes[index]
-            )
-        }
-
         routes.push({
             exact: true,
             ...props,
@@ -112,6 +103,15 @@ export class RouterCore {
                 return this.route(siblings_path, siblings_component, siblings_props, path)
             },
         })
+
+        if (name) {
+            this.routesByName[name] = createRouteChainMethods(
+                this,
+                name,
+                selectedPath,
+                routes[index]
+            )
+        }
 
         return routes[index]
     }
@@ -132,10 +132,6 @@ export class RouterCore {
         const selectedComponent = isPropsComponent ? Props : component
         const selectedProps = isPropsComponent ? {} : Props
         const { name } = selectedProps
-
-        if (name) {
-            this.routesByName[name] = createRouteChainMethods(this, name, path, routes[index])
-        }
 
         routes.push({
             ...selectedProps,
@@ -174,6 +170,10 @@ export class RouterCore {
                 }
             },
         })
+
+        if (name) {
+            this.routesByName[name] = createRouteChainMethods(this, name, path, routes[index])
+        }
 
         callBack(routes[index])
     }

@@ -1,7 +1,7 @@
 import isMatch from './isMatch'
 import { compile } from 'path-to-regexp'
 
-export default function createRouteChainMetods(context, name, path, route) {
+export default function createRouteChainMethods(context, name, path, route) {
     const compiledPath = compile(path)
 
     return {
