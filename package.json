@@ -1,6 +1,6 @@
 {
     "name": "@anew/router",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Anew Router Manager",
     "main": "lib/index.js",
     "author": "Abdelrahman Salem <abubakir1997@gmail.com> (http://www.pages.drexel.edu/\\~aas372/)",
@@ -10,7 +10,13 @@
         "type": "git",
         "url": "git+https://github.com/anew-org/router.git"
     },
-    "keywords": ["anew", "router", "react", "react-router", "react-router-dom"],
+    "keywords": [
+        "anew",
+        "router",
+        "react",
+        "react-router",
+        "react-router-dom"
+    ],
     "bugs": {
         "url": "https://github.com/anew-org/router/issues"
     },
@@ -35,9 +41,6 @@
         "react-router-dom": "^4.2.2"
     },
     "devDependencies": {
-        "husky": "^1.1.3",
-        "lint-staged": "^8.0.4",
-        "prettier": "^1.15.1",
         "babel-cli": "^6.26.0",
         "babel-core": "^6.26.0",
         "babel-eslint": "8",
@@ -53,7 +56,10 @@
         "enzyme-to-json": "^3.3.3",
         "eslint": "4.x",
         "eslint-plugin-react": "^7.10.0",
+        "husky": "^1.1.3",
         "jest": "^23.4.1",
+        "lint-staged": "^8.0.4",
+        "prettier": "^1.15.1",
         "webpack": "^4.25.1"
     }
 }
