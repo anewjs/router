@@ -10,13 +10,7 @@
         "type": "git",
         "url": "git+https://github.com/anew-org/router.git"
     },
-    "keywords": [
-        "anew",
-        "router",
-        "react",
-        "react-router",
-        "react-router-dom"
-    ],
+    "keywords": ["anew", "router", "react", "react-router", "react-router-dom"],
     "bugs": {
         "url": "https://github.com/anew-org/router/issues"
     },
@@ -35,7 +29,6 @@
         "lodash.trimstart": "^4.5.1",
         "path-to-regexp": "^2.4.0",
         "react": "^16.3.1",
-        "react-dom": "^16.6.1",
         "react-router": "^4.3.1",
         "react-router-config": "^1.0.0-beta.4",
         "react-router-dom": "^4.2.2"

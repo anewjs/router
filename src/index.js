@@ -1,1 +1,1 @@
-export { default, RouterCore } from './routerCore'
+export { default, AnewRouter } from './router'
