@@ -1,6 +1,6 @@
 {
     "name": "@anew/router",
-    "version": "1.0.8",
+    "version": "2.0.0",
     "description": "Anew Router Manager",
     "main": "lib/index.js",
     "author": "Abdelrahman Salem <abubakir1997@gmail.com> (http://www.pages.drexel.edu/\\~aas372/)",
@@ -10,7 +10,13 @@
         "type": "git",
         "url": "git+https://github.com/anew-org/router.git"
     },
-    "keywords": ["anew", "router", "react", "react-router", "react-router-dom"],
+    "keywords": [
+        "anew",
+        "router",
+        "react",
+        "react-router",
+        "react-router-dom"
+    ],
     "bugs": {
         "url": "https://github.com/anew-org/router/issues"
     },
