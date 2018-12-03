@@ -31,16 +31,17 @@ export class AnewRouter {
 
     wrap = (Component = this.entry, config = {}) => {
         let { Router = DefaultRouter, Route = DefaultRoute, isRoot = false, history } = {
-            ...config,
             ...this.configuration,
+            ...config,
         }
 
-        if (isRoot && !history) {
+        if (!isRoot) {
+            history = undefined
+        } else if (!history) {
             history = createBrowserHistory()
         }
 
         const route = { routes: this.routes }
-
         const RouteComponent = (
             <Route
                 render={props => (
@@ -101,14 +102,15 @@ export class AnewRouter {
     }
 
     createFullPath = (path, parentPath) => {
-        return `${parentPath}/${path}`.replace(/\/{2,}/, '/')
+        return `${parentPath}/${path}`.replace(/\/{2,}/, '/').replace(/(?<=\w+)\/+$/, '')
     }
 
     build = (routes = [], /*recursive param*/ parentPath = '') => {
         return routes.map(route => {
             const { routes, path, name, redirectTo, component, render } = route
+            const fullPath = this.createFullPath(path, parentPath)
 
-            route.path = this.createFullPath(path, parentPath)
+            route.path = fullPath
 
             if (typeof redirectTo === 'string') {
                 route.redirectTo = () => {
@@ -123,28 +125,35 @@ export class AnewRouter {
             if (routes) {
                 route.routes = this.build(routes, path)
 
-                if (!component || !render) {
-                    route.component = config => this.render(route, config)
-                    route.component.displayName = `AnewRoutes(${name})`
+                if (!component && !render) {
+                    route.render = config => this.render(route, config)
                 }
             }
 
+            route.actions = {
+                path: compile(fullPath),
+                data: prop => (prop ? route[prop] : route),
+                is: pathname => isMatch(pathname, fullPath),
+                routes: (pathname, { strict } = {}) =>
+                    this.match(pathname, { name: routes, strict }),
+                contains: (pathname, { strict } = {}) =>
+                    this.contains(pathname, { name: routes, strict }),
+            }
+
             if (name) {
-                this.names[name] = {
-                    path: compile(path),
-                    data: prop => (props ? route[prop] : route),
-                    is: pathname => isMatch(pathname, path),
-                    routes: (pathname, { strict } = {}) =>
-                        this.match(pathname, { name: routes, strict }),
-                    contains: pathname => this.contains(pathname, { name: routes, strict }),
-                }
+                this.names[name] = route.actions
             }
 
             return route
         })
     }
 
-    render = ({ routes }, { Switch = DefaultSwitch, Route = DefaultRoute, ...extraProps } = {}) => {
+    render = ({ routes, name: parentName = '' }, config = {}) => {
+        const { Switch = DefaultSwitch, Route = DefaultRoute, ...extraProps } = {
+            ...this.configuration,
+            ...config,
+        }
+
         return routes ? (
             <Switch>
                 {routes.map((route, i) => {
@@ -154,13 +163,14 @@ export class AnewRouter {
                         strict,
                         render,
                         redirectTo,
-                        exact = true,
+                        routes,
+                        exact = !routes,
                         component: Component,
                     } = route
 
                     return (
                         <Route
-                            key={name || i}
+                            key={`${parentName}(${name || i})`}
                             path={path}
                             exact={exact}
                             strict={strict}
@@ -172,13 +182,11 @@ export class AnewRouter {
                                     route,
                                 }
 
-                                const redirect = redirectTo && redirectTo(componentProps)
-
-                                return redirect ? (
-                                    typeof redirect === 'string' ? (
-                                        <ReactRouterRedirect to={redirect} />
+                                return redirectTo ? (
+                                    typeof redirectTo === 'function' ? (
+                                        redirectTo(componentProps)
                                     ) : (
-                                        redirect
+                                        <this.Redirect {...redirectTo} />
                                     )
                                 ) : Component ? (
                                     <Component {...componentProps} />
@@ -230,7 +238,7 @@ export class AnewRouter {
      * @return { Boolean }
      */
     contains = (pathname, { name, strict } = {}) => {
-        return !!this.match(pathname, name, strict).length
+        return !!this.match(pathname, { name, strict }).length
     }
 }
 
