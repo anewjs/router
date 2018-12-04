@@ -5,10 +5,10 @@
     "main": "lib/index.js",
     "author": "Abdelrahman Salem <abubakir1997@gmail.com> (http://www.pages.drexel.edu/\\~aas372/)",
     "license": "MIT",
-    "homepage": "https://github.com/anew-org/router#readme",
+    "homepage": "https://github.com/anewjs/router#readme",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/anew-org/router.git"
+        "url": "git+https://github.com/anewjs/router.git"
     },
     "keywords": [
         "anew",
@@ -18,7 +18,7 @@
         "react-router-dom"
     ],
     "bugs": {
-        "url": "https://github.com/anew-org/router/issues"
+        "url": "https://github.com/anewjs/router/issues"
     },
     "scripts": {
         "test": "jest",
