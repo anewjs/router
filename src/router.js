@@ -29,8 +29,8 @@ export class AnewRouter {
         this.configuration = configuration
     }
 
-    wrap = (Component = this.entry, config = {}) => {
-        let { Router = DefaultRouter, Route = DefaultRoute, isRoot = false, history } = {
+    wrap = (Component = this.entry, config = {}, isRoot = false) => {
+        let { Router = DefaultRouter, Route = DefaultRoute, history } = {
             ...this.configuration,
             ...config,
         }
