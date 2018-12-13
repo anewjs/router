@@ -29,12 +29,18 @@ export class AnewRouter {
         this.configuration = configuration
     }
 
-    wrap = (Component = this.entry, config = {}, isRoot = false) => {
-        let { Router = DefaultRouter, Route = DefaultRoute, history } = {
+    wrap = (Component, config = {}, isRoot = false) => {
+        let { Router = DefaultRouter, Route = DefaultRoute, history, routes } = {
             ...this.configuration,
             ...config,
         }
 
+        if (routes) {
+            this.use(routes)
+        }
+        if (!Component) {
+            Component = this.entry
+        }
         if (!isRoot) {
             history = undefined
         } else if (!history) {
