@@ -17,6 +17,11 @@ export class AnewRouter {
     constructor(use, config = {}) {
         this.configuration = config
         this.use(use)
+
+        // Component Names
+        this.Redirect.displayName = 'Router.Redirect'
+        this.Link.displayName = 'Router.Link'
+        this.Protect.displayName = 'Router.Protect'
     }
 
     use = ({ routes, component, ...config } = {}) => {
