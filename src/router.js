@@ -14,40 +14,46 @@ import isMatch from './isMatch'
 import matchRoutes from './matchRoutes'
 
 export class AnewRouter {
-    constructor(config) {
-        this.use(config)
+    constructor(use, config = {}) {
+        this.configuration = config
+        this.use(use)
     }
 
-    use = ({ routes, component, ...configuration } = {}) => {
+    use = ({ routes, component, ...config } = {}) => {
+        this.config(config)
+
         this.names = {}
         this.entry = component
         this.routes = this.build(routes)
-        this.config(configuration)
     }
 
-    config = configuration => {
-        this.configuration = configuration || {}
-    }
-
-    wrap = (Component, config = {}, isRoot = false) => {
-        let { Router = DefaultRouter, Route = DefaultRoute, history, routes } = {
-            ...this.configuration,
-            ...config,
-        }
-
+    config = ({ routes, ...config } = {}) => {
         if (routes) {
             this.use(routes)
         }
+
+        this.configuration = {
+            ...this.configuration,
+            ...config,
+        }
+    }
+
+    wrap = (Component, config, isRoot = false) => {
+        this.config(config)
+
+        if (!isRoot) {
+            this.configuration.history = undefined
+        } else if (!history) {
+            this.configuration.history = createBrowserHistory()
+        }
+
+        const { Router = DefaultRouter, Route = DefaultRoute, history } = this.configuration
+        const route = { routes: this.routes }
+
         if (!Component) {
             Component = this.entry
         }
-        if (!isRoot) {
-            history = undefined
-        } else if (!history) {
-            history = createBrowserHistory()
-        }
 
-        const route = { routes: this.routes }
         const RouteComponent = (
             <Route
                 render={props => (
@@ -161,11 +167,10 @@ export class AnewRouter {
         })
     }
 
-    render = ({ routes, name: parentName = '' }, config = {}) => {
-        const { Switch = DefaultSwitch, Route = DefaultRoute, ...extraProps } = {
-            ...this.configuration,
-            ...config,
-        }
+    render = ({ routes, name: parentName = '' }, config) => {
+        this.config(config)
+
+        const { Switch = DefaultSwitch, Route = DefaultRoute, ...extraProps } = this.configuration
 
         return routes ? (
             <Switch>
