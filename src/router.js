@@ -46,13 +46,15 @@ export class AnewRouter {
     wrap = (Component, config, isRoot = false) => {
         this.config(config)
 
+        let { history } = this.configuration
+
         if (!isRoot) {
-            this.configuration.history = undefined
+            history = undefined
         } else if (!history) {
-            this.configuration.history = createBrowserHistory()
+            history = createBrowserHistory()
         }
 
-        const { Router = DefaultRouter, Route = DefaultRoute, history } = this.configuration
+        const { Router = DefaultRouter, Route = DefaultRoute } = this.configuration
         const route = { routes: this.routes }
 
         if (!Component) {
