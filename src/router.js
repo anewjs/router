@@ -26,7 +26,7 @@ export class AnewRouter {
     }
 
     config = configuration => {
-        this.configuration = configuration
+        this.configuration = configuration || {}
     }
 
     wrap = (Component, config = {}, isRoot = false) => {
@@ -76,22 +76,29 @@ export class AnewRouter {
      */
 
     Redirect = ({ name, params, method = 'path', ...props }) => {
-        const route = this.get(name)
-
         return (
             <ReactRouterRedirect
-                to={route[method](method === 'data' && !params ? 'path' : params)}
+                to={this.get(name)[method](method === 'data' && !params ? 'path' : params)}
                 {...props}
             />
         )
     }
 
     Link = ({ name, params, method = 'path', ...props }) => {
-        const route = this.get(name)
-
         return (
             <ReactRouterLink
-                to={route[method](method === 'data' && !params ? 'path' : params)}
+                to={this.get(name)[method](method === 'data' && !params ? 'path' : params)}
+                {...props}
+            />
+        )
+    }
+
+    Protect = ({ redirectTo, active, params, method = 'path', children, ...props }) => {
+        return active ? (
+            <React.Fragment>{children}</React.Fragment>
+        ) : (
+            <ReactRouterRedirect
+                to={this.get(redirectTo)[method](method === 'data' && !params ? 'path' : params)}
                 {...props}
             />
         )

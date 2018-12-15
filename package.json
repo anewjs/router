@@ -10,13 +10,7 @@
         "type": "git",
         "url": "git+https://github.com/anewjs/router.git"
     },
-    "keywords": [
-        "anew",
-        "router",
-        "react",
-        "react-router",
-        "react-router-dom"
-    ],
+    "keywords": ["anew", "router", "react", "react-router", "react-router-dom"],
     "bugs": {
         "url": "https://github.com/anewjs/router/issues"
     },
@@ -31,25 +25,26 @@
         "start": "babel src -w -d lib"
     },
     "dependencies": {
+        "@babel/runtime": "^7.2.0",
         "history": "^4.7.2",
         "lodash.trimstart": "^4.5.1",
         "path-to-regexp": "^2.4.0",
         "react": "^16.3.1",
         "react-router": "^4.3.1",
-        "react-router-config": "^1.0.0-beta.4",
         "react-router-dom": "^4.2.2"
     },
     "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-core": "^6.26.0",
-        "babel-eslint": "8",
-        "babel-loader": "^7.1.5",
-        "babel-plugin-loop-optimizer": "^1.4.1",
-        "babel-plugin-transform-class-properties": "^6.24.1",
-        "babel-plugin-transform-object-rest-spread": "^6.26.0",
-        "babel-plugin-transform-react-jsx": "^6.24.1",
-        "babel-preset-env": "^1.6.1",
-        "babel-preset-react": "^6.24.1",
+        "@babel/cli": "^7.2.0",
+        "@babel/core": "^7.2.0",
+        "@babel/plugin-proposal-class-properties": "^7.2.1",
+        "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
+        "@babel/plugin-transform-react-display-name": "^7.2.0",
+        "@babel/plugin-transform-react-jsx": "^7.2.0",
+        "@babel/plugin-transform-runtime": "^7.2.0",
+        "@babel/preset-env": "^7.2.0",
+        "babel-core": "^7.0.0-bridge.0",
+        "babel-eslint": "^10.0.1",
+        "babel-jest": "^23.6.0",
         "enzyme": "^3.3.0",
         "enzyme-adapter-react-16": "^1.1.1",
         "enzyme-to-json": "^3.3.3",
