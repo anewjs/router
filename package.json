@@ -10,15 +10,20 @@
         "type": "git",
         "url": "git+https://github.com/anewjs/router.git"
     },
-    "keywords": [
-        "anew",
-        "router",
-        "react",
-        "react-router",
-        "react-router-dom"
-    ],
+    "keywords": ["anew", "router", "react", "react-router", "react-router-dom"],
     "bugs": {
         "url": "https://github.com/anewjs/router/issues"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "src/**/*.{js,json,css,scss,md}": [
+            "prettier --config ./.prettierrc --write \"src/**/*.js\"",
+            "git add"
+        ]
     },
     "scripts": {
         "test": "jest",

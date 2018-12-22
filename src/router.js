@@ -128,7 +128,7 @@ export class AnewRouter {
     }
 
     createFullPath = (path, parentPath) => {
-        return `${parentPath}/${path}`.replace(/\/{2,}/, '/').replace(/(?<=\w+)\/+$/, '')
+        return `${parentPath}/${path}`.replace(/\/{2,}/, '/')
     }
 
     build = (routes = [], /*recursive param*/ parentPath = '') => {
