@@ -106,14 +106,11 @@ export class AnewRouter {
         )
     }
 
-    Protect = ({ redirectTo, active, params, method = 'path', children, ...props }) => {
+    Protect = ({ redirectTo, active, children, ...props }) => {
         return active ? (
             <React.Fragment>{children}</React.Fragment>
         ) : (
-            <ReactRouterRedirect
-                to={this.get(redirectTo)[method](method === 'data' && !params ? 'path' : params)}
-                {...props}
-            />
+            <this.Redirect name={redirectTo} {...props} />
         )
     }
 
