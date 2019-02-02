@@ -133,20 +133,10 @@ export class AnewRouter {
 
     build = (routes = [], /*recursive param*/ parentPath = '') => {
         return routes.map(route => {
-            const { routes, path, name, redirectTo, component, render } = route
+            const { routes, path, name, component, render } = route
             const fullPath = this.createFullPath(path, parentPath)
 
             route.path = fullPath
-
-            if (typeof redirectTo === 'string') {
-                route.redirectTo = () => {
-                    const routeFromName = this.get(redirectTo)
-
-                    return routeFromName
-                        ? routeFromName.path()
-                        : this.createFullPath(redirectTo, parentPath)
-                }
-            }
 
             if (routes) {
                 route.routes = this.build(routes, path)
@@ -213,11 +203,11 @@ export class AnewRouter {
                                 }
 
                                 return redirectTo ? (
-                                    typeof redirectTo === 'function' ? (
-                                        redirectTo(componentProps)
-                                    ) : (
-                                        <this.Redirect {...redirectTo} />
-                                    )
+                                    <this.Redirect
+                                        {...(typeof redirectTo === 'function'
+                                            ? redirectTo(this)
+                                            : redirectTo)}
+                                    />
                                 ) : Component ? (
                                     <Component {...componentProps} />
                                 ) : (
