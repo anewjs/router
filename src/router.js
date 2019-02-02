@@ -177,10 +177,15 @@ export class AnewRouter {
     render = ({ routes, name: parentName = '' }, config) => {
         this.config(config)
 
-        const { Switch = DefaultSwitch, Route = DefaultRoute, ...extraProps } = this.configuration
+        const {
+            Switch = DefaultSwitch,
+            Route = DefaultRoute,
+            history,
+            ...extraProps
+        } = this.configuration
 
         return routes ? (
-            <Switch>
+            <Switch {...(history ? { location: history.location } : {})}>
                 {routes.map((route, i) => {
                     const {
                         name,
