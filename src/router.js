@@ -85,12 +85,14 @@ export class AnewRouter {
      */
 
     Redirect = ({ name, params, method = 'path', ...props }) => {
-        return (
+        const route = this.get(name)
+
+        return !route.is(this.config.history.location.pathname) ? (
             <ReactRouterRedirect
-                to={this.get(name)[method](method === 'data' && !params ? 'path' : params)}
+                to={route[method](method === 'data' && !params ? 'path' : params)}
                 {...props}
             />
-        )
+        ) : null
     }
 
     Link = ({ name, params, method = 'path', ...props }) => {
