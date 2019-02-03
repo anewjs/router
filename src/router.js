@@ -41,12 +41,10 @@ export class AnewRouter {
             this.use(routes)
         }
 
-        this.config = {
+        return (this.config = {
             ...this.config,
             ...config,
-        }
-
-        return this.config
+        })
     }
 
     wrap = (component, config, isRoot = false) => {
@@ -57,31 +55,27 @@ export class AnewRouter {
         const Component = component || entry
         const RouteComponent = (
             <Route
-                render={props => (
-                    <Component
-                        {...props}
-                        route={route}
-                        RouterView={props => _render(route, props)}
-                    />
-                )}
+                render={props => <Component {...props} route={route} RouterView={_render(route)} />}
             />
         )
 
-        let AnewRouter
-
         if (isRoot) {
-            const routerHistory = history || createBrowserHistory()
+            const { history: routerHistory } = !history
+                ? this.setConfig({ history: createBrowserHistory() })
+                : this.config
 
-            AnewRouter = props => (
-                <Router history={routerHistory} {...props}>
-                    {RouteComponent}
-                </Router>
-            )
+            return function AnewRouter(props) {
+                return (
+                    <Router {...props} history={routerHistory}>
+                        {RouteComponent}
+                    </Router>
+                )
+            }
         } else {
-            AnewRouter = () => RouteComponent
+            return function AnewRoute() {
+                return RouteComponent
+            }
         }
-
-        return AnewRouter
     }
 
     /**
@@ -190,7 +184,7 @@ export class AnewRouter {
                 route.routes = _build(routes, path)
 
                 if (!component && !render) {
-                    route.render = config => _render(route, config)
+                    route.render = _render(route)
                 }
             }
 
@@ -218,55 +212,64 @@ export class AnewRouter {
         })
     }
 
-    _render = ({ routes, name: parentName = '' }, props) => {
-        const { Redirect, _render, config } = this
-        const { Switch, Route, history, ...extraProps } = { ...config, ...props }
+    _render = ({ routes, name: parentName = '' }) => {
+        const {
+            Redirect,
+            _render,
+            config: { Switch: ConfigSwitch, Route: ConfigRoute, history },
+        } = this
 
-        return routes ? (
-            <Switch {...(history ? { location: history.location } : {})}>
-                {routes.map((route, i) => {
-                    const {
-                        name,
-                        path,
-                        strict,
-                        render,
-                        redirectTo,
-                        routes,
-                        exact = !routes,
-                        component: Component,
-                    } = route
+        if (routes) {
+            return /* RouterView */ ({
+                Switch = ConfigSwitch,
+                Route = ConfigRoute,
+                ...extraProps
+            } = {}) => (
+                <Switch location={history.location}>
+                    {routes.map((route, i) => {
+                        const {
+                            name,
+                            path,
+                            strict,
+                            render,
+                            redirectTo,
+                            routes,
+                            exact = true,
+                            component: Component,
+                        } = route
 
-                    return (
-                        <Route
-                            key={`${parentName}(${name || i})`}
-                            path={path}
-                            exact={exact}
-                            strict={strict}
-                            render={props => {
-                                const componentProps = {
-                                    ...props,
-                                    ...extraProps,
-                                    RouterView: props => _render(route, props),
-                                    route,
-                                }
+                        return (
+                            <Route
+                                key={`${parentName}(${name || i})`}
+                                path={path}
+                                exact={routes ? false : exact}
+                                strict={strict}
+                                render={props => {
+                                    const componentProps = {
+                                        ...props,
+                                        ...extraProps,
+                                        RouterView: _render(route),
+                                        route,
+                                    }
 
-                                return redirectTo ? (
-                                    <Redirect
-                                        {...(typeof redirectTo === 'function'
-                                            ? redirectTo(this)
-                                            : redirectTo)}
-                                    />
-                                ) : Component ? (
-                                    <Component {...componentProps} />
-                                ) : (
-                                    render(componentProps)
-                                )
-                            }}
-                        />
-                    )
-                })}
-            </Switch>
-        ) : null
+                                    return redirectTo ? (
+                                        <Redirect
+                                            {...(typeof redirectTo === 'function'
+                                                ? redirectTo(this)
+                                                : redirectTo)}
+                                        />
+                                    ) : Component ? (
+                                        <Component {...componentProps} />
+                                    ) : (
+                                        render(componentProps)
+                                    )
+                                }}
+                            />
+                        )
+                    })}
+                </Switch>
+            )
+        }
     }
 }
 
