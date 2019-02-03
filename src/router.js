@@ -234,13 +234,27 @@ export class AnewRouter {
                             render,
                             redirectTo,
                             routes,
+                            push,
                             exact = true,
                             component: Component,
                         } = route
 
-                        return (
+                        const key = `${parentName}(${name || i})`
+
+                        return redirectTo ? (
+                            <Redirect
+                                {...(typeof redirectTo === 'function'
+                                    ? redirectTo(history)
+                                    : redirectTo)}
+                                key={key}
+                                from={path}
+                                exact={exact}
+                                strict={strict}
+                                push={push}
+                            />
+                        ) : (
                             <Route
-                                key={`${parentName}(${name || i})`}
+                                key={key}
                                 path={path}
                                 exact={routes ? false : exact}
                                 strict={strict}
@@ -252,13 +266,7 @@ export class AnewRouter {
                                         route,
                                     }
 
-                                    return redirectTo ? (
-                                        <Redirect
-                                            {...(typeof redirectTo === 'function'
-                                                ? redirectTo(this)
-                                                : redirectTo)}
-                                        />
-                                    ) : Component ? (
+                                    return Component ? (
                                         <Component {...componentProps} />
                                     ) : (
                                         render(componentProps)
