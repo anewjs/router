@@ -14,8 +14,14 @@ import isMatch from './isMatch'
 import matchRoutes from './matchRoutes'
 
 export class AnewRouter {
-    constructor(use, config = {}) {
-        this.configuration = config
+    constructor(use) {
+        this.names = {}
+        this.config = {
+            Router: DefaultRouter,
+            Route: DefaultRoute,
+            Switch: DefaultSwitch,
+        }
+
         this.use(use)
 
         // Component Names
@@ -25,59 +31,55 @@ export class AnewRouter {
     }
 
     use = ({ routes, component, ...config } = {}) => {
-        this.config(config)
-
-        this.names = {}
+        this.setConfig(config)
         this.entry = component
-        this.routes = this.build(routes)
+        this.routes = this._build(routes)
     }
 
-    config = ({ routes, ...config } = {}) => {
+    setConfig = ({ routes, ...config } = {}) => {
         if (routes) {
             this.use(routes)
         }
 
-        this.configuration = {
-            ...this.configuration,
+        this.config = {
+            ...this.config,
             ...config,
         }
+
+        return this.config
     }
 
-    wrap = (Component, config, isRoot = false) => {
-        this.config(config)
+    wrap = (component, config, isRoot = false) => {
+        const { history, Router, Route } = this.setConfig(config)
+        const { routes, entry, _render } = this
 
-        let { history } = this.configuration
-
-        if (!isRoot) {
-            history = undefined
-        } else if (!history) {
-            history = createBrowserHistory()
-        }
-
-        const { Router = DefaultRouter, Route = DefaultRoute } = this.configuration
-        const route = { routes: this.routes }
-
-        if (!Component) {
-            Component = this.entry
-        }
-
+        const route = { routes }
+        const Component = component || entry
         const RouteComponent = (
             <Route
                 render={props => (
                     <Component
                         {...props}
                         route={route}
-                        RouterView={config => this.render(route, config)}
+                        RouterView={props => _render(route, props)}
                     />
                 )}
             />
         )
 
-        const AnewRouter = history
-            ? () => <Router history={history}>{RouteComponent}</Router>
-            : () => RouteComponent
+        let AnewRouter
 
-        AnewRouter.displayName = 'AnewRouter'
+        if (isRoot) {
+            const routerHistory = history || createBrowserHistory()
+
+            AnewRouter = props => (
+                <Router history={routerHistory} {...props}>
+                    {RouteComponent}
+                </Router>
+            )
+        } else {
+            AnewRouter = () => RouteComponent
+        }
 
         return AnewRouter
     }
@@ -107,115 +109,23 @@ export class AnewRouter {
     }
 
     Protect = ({ redirectTo, active, children, ...props }) => {
+        const { Redirect } = this
+
         return active ? (
             <React.Fragment>{children}</React.Fragment>
         ) : (
-            <this.Redirect name={redirectTo} {...props} />
+            <Redirect name={redirectTo} {...props} />
         )
     }
 
     /**
-     | ------------------
-     | Internal Methods
-     | ------------------
-     */
+    | ------------------
+    | Public Methods
+    | ------------------
+    */
 
     get = name => {
         return this.names[name]
-    }
-
-    createFullPath = (path, parentPath) => {
-        return `${parentPath}/${path}`.replace(/\/{2,}/, '/').replace(/(?!^\/)\/+$/, '')
-    }
-
-    build = (routes = [], /*recursive param*/ parentPath = '') => {
-        return routes.map(route => {
-            const { routes, path, name, component, render } = route
-            const fullPath = this.createFullPath(path, parentPath)
-
-            route.path = fullPath
-
-            if (routes) {
-                route.routes = this.build(routes, path)
-
-                if (!component && !render) {
-                    route.render = config => this.render(route, config)
-                }
-            }
-
-            route.actions = {
-                path: compile(fullPath),
-                data: prop => (prop ? route[prop] : route),
-                is: pathname => isMatch(pathname, fullPath),
-                routes: (pathname, { strict } = {}) =>
-                    this.match(pathname, { name: routes, strict }),
-                contains: (pathname, { strict } = {}) =>
-                    this.contains(pathname, { name: routes, strict }),
-            }
-
-            if (name) {
-                this.names[name] = route.actions
-            }
-
-            return route
-        })
-    }
-
-    render = ({ routes, name: parentName = '' }, config) => {
-        this.config(config)
-
-        const {
-            Switch = DefaultSwitch,
-            Route = DefaultRoute,
-            history,
-            ...extraProps
-        } = this.configuration
-
-        return routes ? (
-            <Switch {...(history ? { location: history.location } : {})}>
-                {routes.map((route, i) => {
-                    const {
-                        name,
-                        path,
-                        strict,
-                        render,
-                        redirectTo,
-                        routes,
-                        exact = !routes,
-                        component: Component,
-                    } = route
-
-                    return (
-                        <Route
-                            key={`${parentName}(${name || i})`}
-                            path={path}
-                            exact={exact}
-                            strict={strict}
-                            render={props => {
-                                const componentProps = {
-                                    ...props,
-                                    ...extraProps,
-                                    RouterView: config => this.render(route, config),
-                                    route,
-                                }
-
-                                return redirectTo ? (
-                                    <this.Redirect
-                                        {...(typeof redirectTo === 'function'
-                                            ? redirectTo(this)
-                                            : redirectTo)}
-                                    />
-                                ) : Component ? (
-                                    <Component {...componentProps} />
-                                ) : (
-                                    render(componentProps)
-                                )
-                            }}
-                        />
-                    )
-                })}
-            </Switch>
-        ) : null
     }
 
     /**
@@ -256,6 +166,107 @@ export class AnewRouter {
      */
     contains = (pathname, { name, strict } = {}) => {
         return !!this.match(pathname, { name, strict }).length
+    }
+
+    /**
+     | ------------------
+     | Internal Methods
+     | ------------------
+     */
+
+    _createFullPath = (path, parentPath) => {
+        return `${parentPath}/${path}`.replace(/\/{2,}/, '/').replace(/(?!^\/)\/+$/, '')
+    }
+
+    _build = (routes = [], /*recursive param*/ parentPath = '') => {
+        return routes.map(route => {
+            const { _createFullPath, _build, _render, match: _match, contains: _contains } = this
+            const { routes, path, name, component, render } = route
+            const fullPath = _createFullPath(path, parentPath)
+
+            route.path = fullPath
+
+            if (routes) {
+                route.routes = _build(routes, path)
+
+                if (!component && !render) {
+                    route.render = config => _render(route, config)
+                }
+            }
+
+            route.actions = {
+                path: compile(fullPath),
+                data: prop => {
+                    return prop ? route[prop] : route
+                },
+                is: pathname => {
+                    return isMatch(pathname, fullPath)
+                },
+                routes: (pathname, { strict } = {}) => {
+                    return _match(pathname, { name: routes, strict })
+                },
+                contains: (pathname, { strict } = {}) => {
+                    return _contains(pathname, { name: routes, strict })
+                },
+            }
+
+            if (name) {
+                this.names[name] = route.actions
+            }
+
+            return route
+        })
+    }
+
+    _render = ({ routes, name: parentName = '' }, props) => {
+        const { Redirect, _render, config } = this
+        const { Switch, Route, history, ...extraProps } = { ...config, ...props }
+
+        return routes ? (
+            <Switch {...(history ? { location: history.location } : {})}>
+                {routes.map((route, i) => {
+                    const {
+                        name,
+                        path,
+                        strict,
+                        render,
+                        redirectTo,
+                        routes,
+                        exact = !routes,
+                        component: Component,
+                    } = route
+
+                    return (
+                        <Route
+                            key={`${parentName}(${name || i})`}
+                            path={path}
+                            exact={exact}
+                            strict={strict}
+                            render={props => {
+                                const componentProps = {
+                                    ...props,
+                                    ...extraProps,
+                                    RouterView: props => _render(route, props),
+                                    route,
+                                }
+
+                                return redirectTo ? (
+                                    <Redirect
+                                        {...(typeof redirectTo === 'function'
+                                            ? redirectTo(this)
+                                            : redirectTo)}
+                                    />
+                                ) : Component ? (
+                                    <Component {...componentProps} />
+                                ) : (
+                                    render(componentProps)
+                                )
+                            }}
+                        />
+                    )
+                })}
+            </Switch>
+        ) : null
     }
 }
 
