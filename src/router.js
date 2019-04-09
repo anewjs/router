@@ -183,7 +183,7 @@ export class AnewRouter {
             route.path = fullPath
 
             if (routes) {
-                route.routes = _build(routes, path)
+                route.routes = _build(routes, fullPath)
 
                 if (!component && !render) {
                     route.render = _render(route)
