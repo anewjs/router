@@ -148,7 +148,7 @@ export class AnewRouter {
             case 'object':
                 return matchRoutes(name, pathname)
             default:
-                return matchRoutes(this.routes, pathname)
+                return []
         }
     }
 
