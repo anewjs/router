@@ -6,8 +6,8 @@ import {
     Link as ReactRouterLink,
 } from 'react-router-dom'
 import { compile } from 'path-to-regexp'
+import { createBrowserHistory } from 'history'
 import React from 'react'
-import createBrowserHistory from 'history/createBrowserHistory'
 import trimStart from 'lodash.trimstart'
 
 import isMatch from './isMatch'
