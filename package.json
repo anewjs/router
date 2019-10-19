@@ -1,6 +1,6 @@
 {
     "name": "@anew/router",
-    "version": "2.0.11",
+    "version": "2.0.12",
     "description": "Anew Router Manager",
     "main": "lib/index.js",
     "author": "Abdelrahman Salem <abubakir1997@gmail.com> (http://www.pages.drexel.edu/\\~aas372/)",
