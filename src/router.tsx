@@ -13,15 +13,31 @@ import trimStart from 'lodash.trimstart'
 import isMatch from './isMatch'
 import matchRoutes from './matchRoutes'
 
-export class AnewRouter {
-    constructor(use) {
-        this.names = {}
-        this.config = {
-            Router: DefaultRouter,
-            Route: DefaultRoute,
-            Switch: DefaultSwitch,
-        }
+interface ObjectWithProps {
+    [x: string]: any
+}
 
+interface Route extends ObjectWithProps {
+    name: string
+    path: string
+}
+
+interface ReactComponent extends Function {
+    displayName?: string
+}
+
+export class AnewRouter {
+    entry: ReactComponent
+    routes: Route[]
+
+    names: ObjectWithProps = {}
+    config: ObjectWithProps = {
+        Router: DefaultRouter,
+        Route: DefaultRoute,
+        Switch: DefaultSwitch,
+    }
+
+    constructor(use?: ObjectWithProps) {
         this.use(use)
 
         // Component Names
@@ -30,13 +46,13 @@ export class AnewRouter {
         this.Protect.displayName = 'Router.Protect'
     }
 
-    use = ({ routes, component, ...config } = {}) => {
+    use = ({ routes, component, ...config }: ObjectWithProps = {}) => {
         this.setConfig(config)
         this.entry = component
         this.routes = this._build(routes)
     }
 
-    setConfig = ({ routes, ...config } = {}) => {
+    setConfig = ({ routes, ...config }: ObjectWithProps = {}) => {
         if (routes) {
             this.use(routes)
         }
@@ -47,12 +63,12 @@ export class AnewRouter {
         })
     }
 
-    wrap = (component, config, isRoot = false) => {
+    wrap = (component: ReactComponent, config: ObjectWithProps, isRoot: boolean = false) => {
         const { history, Router, Route } = this.setConfig(config)
         const { routes, entry, _render } = this
 
         const route = { routes }
-        const Component = component || entry
+        const Component: ReactComponent = component || entry
         const RouteComponent = (
             <Route
                 render={props => <Component {...props} route={route} RouterView={_render(route)} />}
@@ -84,7 +100,7 @@ export class AnewRouter {
      | ------------------
      */
 
-    Redirect = ({ name, params, method = 'path', ...props }) => {
+    Redirect: ReactComponent = ({ name, params, method = 'path', ...props }: ObjectWithProps) => {
         const route = this.get(name)
 
         return !route.is(this.config.history.location.pathname) ? (
@@ -95,7 +111,7 @@ export class AnewRouter {
         ) : null
     }
 
-    Link = ({ name, params, method = 'path', ...props }) => {
+    Link: ReactComponent = ({ name, params, method = 'path', ...props }: ObjectWithProps) => {
         return (
             <ReactRouterLink
                 to={this.get(name)[method](method === 'data' && !params ? 'path' : params)}
@@ -104,7 +120,7 @@ export class AnewRouter {
         )
     }
 
-    Protect = ({ redirectTo, active, children, ...props }) => {
+    Protect: ReactComponent = ({ redirectTo, active, children, ...props }) => {
         const { Redirect } = this
 
         return active ? (
@@ -132,7 +148,7 @@ export class AnewRouter {
      * @param  { Boolean }       strict   Strict pathname check
      * @return { Array }                  Matched routes
      */
-    match = (pathname, { name, strict = true } = {}) => {
+    match = (pathname, { name, strict = true }: ObjectWithProps = {}) => {
         switch (typeof name) {
             case 'string':
                 const { routes, path } = this.get(name).data()
@@ -160,7 +176,7 @@ export class AnewRouter {
      * @param  { Boolean } strict   Strict pathname check
      * @return { Boolean }
      */
-    contains = (pathname, { name, strict } = {}) => {
+    contains = (pathname, { name, strict }: ObjectWithProps = {}) => {
         return !!this.match(pathname, { name, strict }).length
     }
 
@@ -174,7 +190,7 @@ export class AnewRouter {
         return `${parentPath}/${path}`.replace(/\/{2,}/, '/').replace(/(?!^\/)\/+$/, '')
     }
 
-    _build = (routes = [], /*recursive param*/ parentPath = '') => {
+    _build = (routes: Route[] = [], /*recursive param*/ parentPath: string = '') => {
         return routes.map(route => {
             const { _createFullPath, _build, _render, match: _match, contains: _contains } = this
             const { routes, path, name, component, render } = route
@@ -198,10 +214,10 @@ export class AnewRouter {
                 is: pathname => {
                     return isMatch(pathname, fullPath)
                 },
-                routes: (pathname, { strict } = {}) => {
+                routes: (pathname, { strict }: ObjectWithProps = {}) => {
                     return _match(pathname, { name: routes, strict })
                 },
-                contains: (pathname, { strict } = {}) => {
+                contains: (pathname, { strict }: ObjectWithProps = {}) => {
                     return _contains(pathname, { name: routes, strict })
                 },
             }
@@ -214,7 +230,7 @@ export class AnewRouter {
         })
     }
 
-    _render = ({ routes, name: parentName = '' }) => {
+    _render = ({ routes, name: parentName = '' }: ObjectWithProps) => {
         const {
             Redirect,
             _render,

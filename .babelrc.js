@@ -1,14 +1,25 @@
-const { NODE_ENV, BABEL_ENV } = process.env
-const cjs = NODE_ENV === 'test' || BABEL_ENV === 'commonjs'
-const loose = true
+const { NODE_ENV } = process.env
 
 module.exports = {
-    presets: [['@babel/env', { loose, modules: false }]],
+    presets: [
+        '@babel/typescript',
+        [
+            '@babel/env',
+            {
+                targets: {
+                    browsers: ['ie >= 11'],
+                },
+                exclude: ['transform-async-to-generator', 'transform-regenerator'],
+                modules: false,
+                loose: true,
+            },
+        ],
+    ],
     plugins: [
-        ['@babel/proposal-object-rest-spread', { loose }],
-        '@babel/plugin-proposal-class-properties',
+        '@babel/proposal-class-properties',
         '@babel/transform-react-jsx',
-        cjs && ['@babel/transform-modules-commonjs', { loose }],
-        ['@babel/transform-runtime', { useESModules: !cjs }],
+        // don't use `loose` mode here - need to copy symbols when spreading
+        '@babel/proposal-object-rest-spread',
+        NODE_ENV === 'test' && '@babel/transform-modules-commonjs',
     ].filter(Boolean),
 }
