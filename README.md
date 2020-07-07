@@ -1,9 +1,13 @@
-# Anew Router
+# `@anew/router`
 
 > A lightweight React Router framework
 > Use [react-navigation](https://reactnavigation.org/) for react native routes.
 
 The routes utility uses `react-router-dom` and `react-router-config` to define application routes. The utility adopts a cascading syntax (method chaining) to build the config passed to `react-router-config`.
+
+## Whats Next?
+
+- Reimplement using typescript
 
 ## Table of Contents
 
