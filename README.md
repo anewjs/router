@@ -1,4 +1,8 @@
-# `@anew/router`
+# DEPRECATED
+
+Deprecated in favor of using `react-router` or `reach-router`.
+
+## `@anew/router`
 
 > A lightweight React Router framework
 > Use [react-navigation](https://reactnavigation.org/) for react native routes.
